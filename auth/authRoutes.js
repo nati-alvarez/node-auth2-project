@@ -8,10 +8,10 @@ router.post("/login", async (req, res)=>{
     try{
         const {username, password} = req.body;
         if(!username || !password) res.status(400).json({message: "Username and password are required"});
-        
+
         const user = await db("users").where({username: username}).first();
-        if(!user) return res.status(401).json({message: "Incorrect username or password"});
-        if(!bcrypt.compareSync(password, user.password)) return res.status(401).json({message: "Incorrect username or password"});
+        if(!user) return res.status(401).json({message: "You shall not pass!"});
+        if(!bcrypt.compareSync(password, user.password)) return res.status(401).json({message: "You shall not pass!"});
         const token = generateToken(user);
         res.status(200).json({message: "Login successful", token: token});
     }catch(err){
@@ -20,7 +20,7 @@ router.post("/login", async (req, res)=>{
     }
 });
 
-router.post("/signup", async (req, res)=>{
+router.post("/register", async (req, res)=>{
     try{
     const {username, department, password} = req.body;
     if(!username || !department || !password) return res.status(400).json({message: "All fields are required"});
@@ -45,7 +45,8 @@ router.post("/signup", async (req, res)=>{
 function generateToken(user){
     const payload = {
         subject: user.id,
-        username: user.username
+        username: user.username,
+        department: user.department
     }
 
     const options = {
